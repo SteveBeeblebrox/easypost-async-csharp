@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>EasyPost</RootNamespace>
     <AssemblyName>EasyPost</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -27,29 +27,48 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\lib\net45\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>..\lib\net45\EasyPost.XML</DocumentationFile>
+    <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
-  <PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Test|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\lib\net45\Test</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>..\lib\net45\Test\EasyPost.XML</DocumentationFile>
+    <NoWarn>CS1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Test' ">
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
     <AssemblyOriginatorKeyFile>EasyPost.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="RestSharp, Version=100.0.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
-      <HintPath>..\packages\RestSharpSigned.105.2.3\lib\net45\RestSharp.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="RestSharp, Version=106.13.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.106.13.0\lib\net452\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -58,14 +77,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Address.cs" />
+    <Compile Include="AddressCollection.cs" />
     <Compile Include="ApiKey.cs" />
     <Compile Include="Batch.cs" />
+    <Compile Include="BatchCollection.cs" />
     <Compile Include="BatchShipment.cs" />
+    <Compile Include="Brand.cs" />
     <Compile Include="CarrierAccount.cs" />
     <Compile Include="CarrierDetail.cs" />
     <Compile Include="CarrierType.cs" />
     <Compile Include="Error.cs" />
     <Compile Include="Event.cs" />
+    <Compile Include="EventCollection.cs" />
+    <Compile Include="Insurance.cs" />
+    <Compile Include="InsuranceCollection.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="ClientConfiguration.cs" />
@@ -73,33 +98,39 @@
     <Compile Include="Report.cs" />
     <Compile Include="ReportList.cs" />
     <Compile Include="Resource.cs" />
+    <Compile Include="Smartrate.cs" />
+    <Compile Include="TimeInTransit.cs" />
     <Compile Include="TrackerList.cs" />
     <Compile Include="ScanFormList.cs" />
     <Compile Include="Exception.cs" />
     <Compile Include="Fee.cs" />
     <Compile Include="Form.cs" />
     <Compile Include="Order.cs" />
-    <Compile Include="Item.cs" />
     <Compile Include="CustomsInfo.cs" />
     <Compile Include="CustomsItem.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="IResource.cs" />
-    <Compile Include="Container.cs" />
     <Compile Include="Parcel.cs" />
     <Compile Include="Pickup.cs" />
     <Compile Include="PostageLabel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rating.cs" />
     <Compile Include="Request.cs" />
     <Compile Include="ScanForm.cs" />
     <Compile Include="Security.cs" />
     <Compile Include="Shipment.cs" />
     <Compile Include="ShipmentList.cs" />
+    <Compile Include="TaxIdentifier.cs" />
     <Compile Include="Tracker.cs" />
     <Compile Include="TrackingDetail.cs" />
     <Compile Include="TrackingLocation.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Verification.cs" />
+    <Compile Include="VerificationDetails.cs" />
     <Compile Include="Verifications.cs" />
+    <Compile Include="VersionInfo.cs" />
+    <Compile Include="Webhook.cs" />
+    <Compile Include="WebhookList.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Rate.cs" />
@@ -112,6 +143,9 @@
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

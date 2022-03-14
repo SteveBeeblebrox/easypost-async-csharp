@@ -1,5 +1,8 @@
 # EasyPost .Net Client Library
 
+[![CI](https://github.com/EasyPost/easypost-csharp/workflows/CI/badge.svg)](https://github.com/EasyPost/easypost-csharp/actions?query=workflow%3ACI)
+[![NuGet](https://img.shields.io/nuget/v/EasyPost-Official)](https://www.nuget.org/packages/EasyPost-Official)
+
 EasyPost is a simple shipping API. You can sign up for an account at https://easypost.com
 
 ## Documentation
@@ -59,7 +62,7 @@ Address address = new Address() {
     verify = new List<string>() { "delivery" }
 };
 
-Address address = address.Create();
+address.Create();
 
 if (address.verifications.delivery.success) {
     // successful verification
@@ -156,12 +159,12 @@ Shipment shipment = new Shipment() {
     to_address = toAddress,
     parcel = parcel,
     customs_info = info,
-    optoins = options
+    options = options
 };
 
 shipment.Buy(shipment.LowestRate(
-    includeServices: new List<Service>() { Service.Priority },
-    excludeCarriers: new List<Carrier>() { Carrier.USPS }
+    includeServices: new List<string>() { "Priority" },
+    excludeCarriers: new List<string>() { "USPS" }
 ));
 
 shipment.postage_label.url; // https://easypost-files.s3-us-west-2.amazonaws.com/files/postage_label/20160826/8e77c397d47b4d088f1c684b7acd802a.png
@@ -171,36 +174,9 @@ foreach (Form form in shipment.forms) {
 }
 ```
 
-### Asynchronous Batch Processing
+### Warning about Threads
 
-The `Batch` object allows you to perform operations on multiple `Shipment`s at once. This includes scheduling a `Pickup`, creating a `ScanForm` and consolidating labels. Operations performed on a `Batch` are asynchronous and take advantage of our [webhoook](https://www.easypost.com/docs/api/csharp#events) infrastructure.
-
-```cs
-using EasyPost;
-
-Shipment shipment = new Shipment() {
-    from_address = fromAddress,
-    to_address = toAddress,
-    parcel = parcel,
-    optoins = options
-};
-
-Batch batch = Batch.CreateAndBuy(new Dictionary<string, object>() {
-    { "reference", "MyReference" },
-    { "shipments", new List<Dictionary<string, object>>() { shipment } }
-});
-```
-
-This will produce two webhooks. One `batch.created` and one `batch.updated`. Process each `Batch` [state](https://www.easypost.com/docs/api/csharp#batch-object) according to your business logic.
-
-```cs
-using EasyPost;
-
-Batch batch = Batch.Retrieve("batch_...");
-batch.GenerateLabel("zpl"); // populates batch.label_url asynchronously
-```
-
-Consume the subsequent `batch.updated` webhook to process further.
+NOTE: The EasyPost .NET client library (in particular, the `ClientManager` global object) is not threadsafe; do not attempt to perform requests from multiple threads in parallel. This can be particularly problematic if using multiple API keys; make sure to always use a Mutex, Monitor, or other synchronization method to ensure that concurrent requests do not enter the EasyPost library from different threads.
 
 ### Reporting Issues
 
