@@ -1,24 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using RestSharp;
 
 namespace EasyPost
 {
     public class Webhook : Resource
     {
+        [JsonProperty("disabled_at")]
         public DateTime? disabled_at { get; set; }
+        [JsonProperty("id")]
         public string id { get; set; }
+        [JsonProperty("mode")]
         public string mode { get; set; }
+        [JsonProperty("url")]
         public string url { get; set; }
 
         /// <summary>
         ///     Delete this webhook.
         /// </summary>
-        public void Destroy()
+        /// <returns>Whether the request was successful or not.</returns>
+        public bool Delete()
         {
             Request request = new Request("webhooks/{id}", Method.DELETE);
             request.AddUrlSegment("id", id);
-            request.Execute();
+            return request.Execute();
         }
 
         /// <summary>
@@ -59,7 +65,7 @@ namespace EasyPost
         ///     Get a list of scan forms.
         /// </summary>
         /// <returns>List of EasyPost.Webhook instances.</returns>
-        public static List<Webhook> List(Dictionary<string, object> parameters = null)
+        public static List<Webhook> All(Dictionary<string, object> parameters = null)
         {
             Request request = new Request("webhooks");
 

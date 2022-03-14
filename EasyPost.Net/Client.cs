@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
-using Newtonsoft.Json;
+using EasyPost.Utilities;
 using RestSharp;
 
 namespace EasyPost
@@ -40,43 +41,71 @@ namespace EasyPost
         ///     Constructor for the EasyPost client.
         /// </summary>
         /// <param name="clientConfiguration">EasyPost.ClientConfiguration object instance to use to configure this client.</param>
-        public Client(ClientConfiguration clientConfiguration)
+        /// <param name="customHttpClient">Custom HttpClient to pass into RestSharp if needed. Mostly for debug purposes, not advised for general use.</param>
+        public Client(ClientConfiguration clientConfiguration, HttpClient? customHttpClient = null)
         {
             ServicePointManager.SecurityProtocol |= Security.GetProtocol();
-            _configuration = clientConfiguration ?? throw new ArgumentNullException("clientConfiguration");
+            _configuration = clientConfiguration ?? throw new ArgumentNullException(nameof(clientConfiguration));
 
-            _restClient = new RestClient(clientConfiguration.ApiBase);
-            _restClient.Timeout = ConnectTimeoutMilliseconds;
-
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            FileVersionInfo info = FileVersionInfo.GetVersionInfo(assembly.Location);
-            _libraryVersion = info.FileVersion;
+            try
+            {
+                Assembly assembly = typeof(Client).Assembly;
+                FileVersionInfo info = FileVersionInfo.GetVersionInfo(assembly.Location);
+                _libraryVersion = info.FileVersion;
+            }
+            catch (Exception)
+            {
+                _libraryVersion = "Unknown";
+            }
 
             _dotNetVersion = Environment.Version.ToString();
+
+            RestClientOptions clientOptions = new RestClientOptions
+            {
+                Timeout = ConnectTimeoutMilliseconds,
+                BaseUrl = new Uri(clientConfiguration.ApiBase),
+                UserAgent = UserAgent
+            };
+
+            _restClient = customHttpClient != null ? new RestClient(customHttpClient, clientOptions) : new RestClient(clientOptions);
         }
 
         /// <summary>
         ///     Execute a request against the EasyPost API.
         /// </summary>
         /// <param name="request">EasyPost.Request object instance to execute.</param>
-        /// <returns>RestSharp.IRestResponse instance.</returns>
-        internal IRestResponse Execute(Request request) => _restClient.Execute(PrepareRequest(request));
+        /// <returns>Whether request was successful.</returns>
+        internal bool Execute(Request request)
+        {
+            RestResponse response = _restClient.ExecuteAsync(PrepareRequest(request)).GetAwaiter().GetResult();
+            return response.IsSuccessful;
+        }
 
         /// <summary>
         ///     Execute a request against the EasyPost API.
         /// </summary>
         /// <param name="request">EasyPost.Request object instance to execute.</param>
         /// <typeparam name="T">Type of object to deserialize response data into.</typeparam>
+        /// <param name="rootElement">Key of root element of the JSON response. Used while deserializing.</param>
         /// <returns>An instance of a T type object.</returns>
         /// <exception cref="HttpException">An error occurred during the API request.</exception>
-        internal T Execute<T>(Request request) where T : new()
+        internal T Execute<T>(Request request, string rootElement = null) where T : new()
         {
-            RestResponse<T> response = (RestResponse<T>)_restClient.Execute<T>(PrepareRequest(request));
+            RestResponse<T> response = _restClient.ExecuteAsync<T>(PrepareRequest(request)).GetAwaiter().GetResult();
             int statusCode = Convert.ToInt32(response.StatusCode);
+
+            List<string> rootElements = null;
+            if (rootElement != null)
+            {
+                rootElements = new List<string>
+                {
+                    rootElement
+                };
+            }
 
             if (statusCode < 400)
             {
-                return response.Data;
+                return JsonSerialization.ConvertJsonToObject<T>(response, null, rootElements);
             }
 
             Dictionary<string, Dictionary<string, object>> body;
@@ -84,9 +113,9 @@ namespace EasyPost
 
             try
             {
-                body = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(response.Content);
-                errors = JsonConvert.DeserializeObject<List<Error>>(
-                    JsonConvert.SerializeObject(body["error"]["errors"]));
+                body = JsonSerialization.ConvertJsonToObject<Dictionary<string, Dictionary<string, object>>>(response.Content);
+                string errorsSerialized = JsonSerialization.ConvertObjectToJson(body["error"]["errors"]);
+                errors = JsonSerialization.ConvertJsonToObject<List<Error>>(errorsSerialized);
             }
             catch
             {
@@ -110,7 +139,6 @@ namespace EasyPost
         {
             RestRequest restRequest = (RestRequest)request;
             restRequest.Timeout = RequestTimeoutMilliseconds;
-            restRequest.AddHeader("user_agent", UserAgent);
             restRequest.AddHeader("authorization", "Bearer " + _configuration.ApiKey);
             restRequest.AddHeader("content_type", "application/json");
 

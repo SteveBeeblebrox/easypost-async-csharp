@@ -1,33 +1,57 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using RestSharp;
 
 namespace EasyPost
 {
     public class Address : Resource
     {
+        [JsonProperty("carrier_facility")]
         public string carrier_facility { get; set; }
+        [JsonProperty("city")]
         public string city { get; set; }
+        [JsonProperty("company")]
         public string company { get; set; }
+        [JsonProperty("country")]
         public string country { get; set; }
+        [JsonProperty("created_at")]
         public DateTime? created_at { get; set; }
+        [JsonProperty("email")]
         public string email { get; set; }
+        [JsonProperty("error")]
         public string error { get; set; }
+        [JsonProperty("federal_tax_id")]
         public string federal_tax_id { get; set; }
+        [JsonProperty("id")]
         public string id { get; set; }
+        [JsonProperty("message")]
         public string message { get; set; }
+        [JsonProperty("mode")]
         public string mode { get; set; }
+        [JsonProperty("name")]
         public string name { get; set; }
+        [JsonProperty("phone")]
         public string phone { get; set; }
+        [JsonProperty("residential")]
         public bool? residential { get; set; }
+        [JsonProperty("state")]
         public string state { get; set; }
+        [JsonProperty("state_tax_id")]
         public string state_tax_id { get; set; }
+        [JsonProperty("street1")]
         public string street1 { get; set; }
+        [JsonProperty("street2")]
         public string street2 { get; set; }
+        [JsonProperty("updated_at")]
         public DateTime? updated_at { get; set; }
+        [JsonProperty("verifications")]
         public Verifications verifications { get; set; }
+        [JsonProperty("verify")]
         public List<string> verify { get; set; }
+        [JsonProperty("verify_strict")]
         public List<string> verify_strict { get; set; }
+        [JsonProperty("zip")]
         public string zip { get; set; }
 
         /// <summary>
@@ -114,11 +138,31 @@ namespace EasyPost
                 verifications = (List<string>)parameters["verifications"];
                 parameters.Remove("verifications");
             }
+            else if (parameters.ContainsKey("verify"))
+            {
+                verifications = new List<string>();
+                foreach (bool val in (List<bool>)parameters["verify"])
+                {
+                    verifications.Add(val.ToString());
+                }
+
+                parameters.Remove("verify");
+            }
 
             if (parameters.ContainsKey("strict_verifications"))
             {
                 strictVerifications = (List<string>)parameters["strict_verifications"];
                 parameters.Remove("strict_verifications");
+            }
+            else if (parameters.ContainsKey("verify_strict"))
+            {
+                strictVerifications = new List<string>();
+                foreach (bool val in (List<bool>)parameters["verify_strict"])
+                {
+                    strictVerifications.Add(val.ToString());
+                }
+
+                parameters.Remove("verify_strict");
             }
 
             return SendCreate(parameters, verifications, strictVerifications);
@@ -178,7 +222,7 @@ namespace EasyPost
         ///     * {"page_size", int} Max size of list. Default to 20.
         ///     All invalid keys will be ignored.
         /// </param>
-        /// <returns>EasyPost.AddressCollection instance.</returns>
+        /// <returns>An EasyPost.AddressCollection instance.</returns>
         public static AddressCollection All(Dictionary<string, object> parameters = null)
         {
             parameters = parameters ?? new Dictionary<string, object>();
@@ -191,7 +235,7 @@ namespace EasyPost
         private static Address SendCreate(Dictionary<string, object> parameters, List<string> verifications = null,
             List<string> strictVerifications = null)
         {
-            Request request = new Request("addresses", Method.POST);
+            Request request = new Request("addresses", Method.Post);
             request.AddBody(new Dictionary<string, object>
             {
                 {

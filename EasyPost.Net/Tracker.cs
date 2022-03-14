@@ -1,25 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using RestSharp;
 
 namespace EasyPost
 {
     public class Tracker : Resource
     {
+        [JsonProperty("carrier")]
         public string carrier { get; set; }
+        [JsonProperty("carrier_detail")]
         public CarrierDetail carrier_detail { get; set; }
+        [JsonProperty("created_at")]
         public DateTime? created_at { get; set; }
+        [JsonProperty("est_delivery_date")]
         public DateTime? est_delivery_date { get; set; }
+        [JsonProperty("id")]
         public string id { get; set; }
+        [JsonProperty("mode")]
         public string mode { get; set; }
+        [JsonProperty("public_url")]
         public string public_url { get; set; }
+        [JsonProperty("shipment_id")]
         public string shipment_id { get; set; }
+        [JsonProperty("signed_by")]
         public string signed_by { get; set; }
+        [JsonProperty("status")]
         public string status { get; set; }
+        [JsonProperty("tracking_code")]
         public string tracking_code { get; set; }
+        [JsonProperty("tracking_details")]
         public List<TrackingDetail> tracking_details { get; set; }
+        [JsonProperty("tracking_updated_at")]
         public DateTime tracking_updated_at { get; set; }
+        [JsonProperty("updated_at")]
         public DateTime? updated_at { get; set; }
+        [JsonProperty("weight")]
         public double? weight { get; set; }
 
         /// <summary>
@@ -30,7 +46,7 @@ namespace EasyPost
         /// <returns>An EasyPost.Tracker instance.</returns>
         public static Tracker Create(string carrier, string trackingCode)
         {
-            Request request = new Request("trackers", Method.POST);
+            Request request = new Request("trackers", Method.Post);
             Dictionary<string, object> parameters = new Dictionary<string, object>
             {
                 {
@@ -70,15 +86,15 @@ namespace EasyPost
         ///     * {"page_size", int} Size of page. Default to 30.
         ///     All invalid keys will be ignored.
         /// </param>
-        /// <returns>Instance of EasyPost.ShipmentList.</returns>
-        public static TrackerList List(Dictionary<string, object> parameters = null)
+        /// <returns>A EasyPost.TrackerCollection instance.</returns>
+        public static TrackerCollection All(Dictionary<string, object> parameters = null)
         {
             Request request = new Request("trackers");
             request.AddQueryString(parameters ?? new Dictionary<string, object>());
 
-            TrackerList trackerList = request.Execute<TrackerList>();
-            trackerList.filters = parameters;
-            return trackerList;
+            TrackerCollection trackerCollection = request.Execute<TrackerCollection>();
+            trackerCollection.filters = parameters;
+            return trackerCollection;
         }
 
         /// <summary>
@@ -101,7 +117,7 @@ namespace EasyPost
         /// <returns>True</returns>
         public static bool CreateList(Dictionary<string, object> parameters)
         {
-            Request request = new Request("trackers/create_list", RestSharp.Method.POST);
+            Request request = new Request("trackers/create_list", RestSharp.Method.Post);
             request.AddBody(new Dictionary<string, object>
             {
                 {

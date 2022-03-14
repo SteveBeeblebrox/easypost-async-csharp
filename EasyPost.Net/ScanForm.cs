@@ -1,21 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using RestSharp;
 
 namespace EasyPost
 {
     public class ScanForm : Resource
     {
+        [JsonProperty("address")]
         public Address address { get; set; }
+        [JsonProperty("batch_id")]
         public string batch_id { get; set; }
+        [JsonProperty("created_at")]
         public DateTime? created_at { get; set; }
+        [JsonProperty("form_file_type")]
         public string form_file_type { get; set; }
+        [JsonProperty("form_url")]
         public string form_url { get; set; }
+        [JsonProperty("id")]
         public string id { get; set; }
+        [JsonProperty("message")]
         public string message { get; set; }
+        [JsonProperty("mode")]
         public string mode { get; set; }
+        [JsonProperty("status")]
         public string status { get; set; }
+        [JsonProperty("tracking_codes")]
         public List<string> tracking_codes { get; set; }
+        [JsonProperty("updated_at")]
         public DateTime? updated_at { get; set; }
 
         /// <summary>
@@ -32,7 +44,7 @@ namespace EasyPost
                 }
             };
 
-            Request request = new Request("scan_forms", Method.POST);
+            Request request = new Request("scan_forms", Method.Post);
             request.AddBody(new Dictionary<string, object>
             {
                 {
@@ -58,15 +70,15 @@ namespace EasyPost
         ///     * {"page_size", int} Max size of list. Default to 20.
         ///     All invalid keys will be ignored.
         /// </param>
-        /// <returns>Instance of EasyPost.ScanForm.</returns>
-        public static ScanFormList List(Dictionary<string, object> parameters = null)
+        /// <returns>An EasyPost.ScanFormCollection instance.</returns>
+        public static ScanFormCollection All(Dictionary<string, object> parameters = null)
         {
             Request request = new Request("scan_forms");
             request.AddQueryString(parameters ?? new Dictionary<string, object>());
 
-            ScanFormList scanFormList = request.Execute<ScanFormList>();
-            scanFormList.filters = parameters;
-            return scanFormList;
+            ScanFormCollection scanFormCollection = request.Execute<ScanFormCollection>();
+            scanFormCollection.filters = parameters;
+            return scanFormCollection;
         }
 
         /// <summary>

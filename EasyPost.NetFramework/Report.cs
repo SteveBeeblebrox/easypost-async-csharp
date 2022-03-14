@@ -1,20 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using RestSharp;
 
 namespace EasyPost
 {
     public class Report : Resource
     {
+        [JsonProperty("created_at")]
         public DateTime? created_at { get; set; }
+        [JsonProperty("end_date")]
         public DateTime? end_date { get; set; }
+        [JsonProperty("id")]
         public string id { get; set; }
+        [JsonProperty("include_children")]
         public bool include_children { get; set; }
+        [JsonProperty("mode")]
         public string mode { get; set; }
+        [JsonProperty("start_date")]
         public DateTime? start_date { get; set; }
+        [JsonProperty("status")]
         public string status { get; set; }
+        [JsonProperty("updated_at")]
         public DateTime? updated_at { get; set; }
+        [JsonProperty("url")]
         public string url { get; set; }
+        [JsonProperty("url_expires_at")]
         public DateTime? url_expires_at { get; set; }
 
         /// <summary>
@@ -54,17 +65,17 @@ namespace EasyPost
         ///     All invalid keys will be ignored.
         /// </param>
         /// <param name="type">The type of report, e.g. "shipment", "tracker", "payment_log", etc.</param>
-        /// <returns>Instance of EasyPost.ScanForm.</returns>
-        public static ReportList List(string type, Dictionary<string, object> parameters = null)
+        /// <returns>An EasyPost.ReportCollection instance.</returns>
+        public static ReportCollection All(string type, Dictionary<string, object> parameters = null)
         {
             Request request = new Request("reports/{type}");
             request.AddUrlSegment("type", type);
             request.AddQueryString(parameters ?? new Dictionary<string, object>());
 
-            ReportList reportList = request.Execute<ReportList>();
-            reportList.filters = parameters;
-            reportList.type = type;
-            return reportList;
+            ReportCollection reportCollection = request.Execute<ReportCollection>();
+            reportCollection.filters = parameters;
+            reportCollection.type = type;
+            return reportCollection;
         }
 
 

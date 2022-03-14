@@ -9,10 +9,12 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>EasyPost</RootNamespace>
     <AssemblyName>EasyPost.NetFramework</AssemblyName>
-    <Configurations>Release;Debug;Test</Configurations>
+    <Configurations>Release;Debug</Configurations>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <LangVersion>8.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -87,13 +89,15 @@
     <Compile Include="Options.cs" />
     <Compile Include="ClientConfiguration.cs" />
     <Compile Include="ClientManager.cs" />
+    <Compile Include="Refund.cs" />
+    <Compile Include="RefundCollection.cs" />
     <Compile Include="Report.cs" />
-    <Compile Include="ReportList.cs" />
+    <Compile Include="ReportCollection.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Smartrate.cs" />
     <Compile Include="TimeInTransit.cs" />
-    <Compile Include="TrackerList.cs" />
-    <Compile Include="ScanFormList.cs" />
+    <Compile Include="TrackerCollection.cs" />
+    <Compile Include="ScanFormCollection.cs" />
     <Compile Include="Exception.cs" />
     <Compile Include="Fee.cs" />
     <Compile Include="Form.cs" />
@@ -106,12 +110,11 @@
     <Compile Include="Pickup.cs" />
     <Compile Include="PostageLabel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rating.cs" />
     <Compile Include="Request.cs" />
     <Compile Include="ScanForm.cs" />
     <Compile Include="Security.cs" />
     <Compile Include="Shipment.cs" />
-    <Compile Include="ShipmentList.cs" />
+    <Compile Include="ShipmentCollection.cs" />
     <Compile Include="TaxIdentifier.cs" />
     <Compile Include="Tracker.cs" />
     <Compile Include="TrackingDetail.cs" />

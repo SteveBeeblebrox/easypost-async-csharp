@@ -1,36 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using RestSharp;
 
 namespace EasyPost
 {
     public class User : Resource
     {
+        [JsonProperty("api_keys")]
         public List<ApiKey> api_keys { get; set; }
+        [JsonProperty("balance")]
         public string balance { get; set; }
+        [JsonProperty("children")]
         public List<User> children { get; set; }
+        [JsonProperty("created_at")]
         public DateTime? created_at { get; set; }
+        [JsonProperty("email")]
         public string email { get; set; }
+        [JsonProperty("id")]
         public string id { get; set; }
+        [JsonProperty("name")]
         public string name { get; set; }
+        [JsonProperty("parent_id")]
         public string parent_id { get; set; }
+        [JsonProperty("password")]
         public string password { get; set; }
+        [JsonProperty("password_confirmation")]
         public string password_confirmation { get; set; }
+        [JsonProperty("phone_number")]
         public string phone_number { get; set; }
+        [JsonProperty("price_per_shipment")]
         public string price_per_shipment { get; set; }
+        [JsonProperty("recharge_amount")]
         public string recharge_amount { get; set; }
+        [JsonProperty("recharge_threshold")]
         public string recharge_threshold { get; set; }
+        [JsonProperty("secondary_recharge_amount")]
         public string secondary_recharge_amount { get; set; }
+        [JsonProperty("updated_at")]
         public DateTime? updated_at { get; set; }
 
         /// <summary>
         ///     Delete the user.
         /// </summary>
-        public void Destroy()
+        /// <returns>Whether the request was successful or not.</returns>
+        public bool Delete()
         {
             Request request = new Request("users/{id}", Method.DELETE);
             request.AddUrlSegment("id", id);
-            request.Execute();
+            return request.Execute();
         }
 
         /// <summary>
@@ -115,7 +133,6 @@ namespace EasyPost
             return request.Execute<User>();
         }
 
-
         /// <summary>
         ///     Retrieve a User from its id. If no id is specified, it returns the user for the api_key specified.
         /// </summary>
@@ -134,6 +151,19 @@ namespace EasyPost
                 request = new Request("users/{id}");
                 request.AddUrlSegment("id", id);
             }
+
+            return request.Execute<User>();
+        }
+
+        /// <summary>
+        ///     Retrieve the current user.
+        /// </summary>
+        /// <returns>EasyPost.User instance.</returns>
+        public static User RetrieveMe()
+        {
+            Request request;
+
+            request = new Request("users");
 
             return request.Execute<User>();
         }
